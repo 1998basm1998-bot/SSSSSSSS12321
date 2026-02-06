@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>النظام المحاسبي الذكي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Tajawal', sans-serif; }
+        /* تخصيص ألوان إضافية حسب الطلب (أزرق - رمادي) */
+        .bg-custom-dark { background-color: #1e293b; } /* Slate 800 */
+        .bg-custom-blue { background-color: #3b82f6; } /* Blue 500 */
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div id="loginScreen" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg shadow-2xl w-96 text-center">
+            <div class="mb-6">
+                <i class="fa-solid fa-chart-pie text-5xl text-blue-600"></i>
+                <h1 class="text-2xl font-bold mt-2 text-slate-700">النظام المحاسبي</h1>
+            </div>
+            <input type="text" placeholder="اسم المستخدم" class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:border-blue-500">
+            <input type="password" placeholder="كلمة المرور" class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:border-blue-500">
+            <button onclick="login()" class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 transition">تسجيل الدخول</button>
+            <p class="text-red-500 text-sm mt-3 hidden" id="loginError">بيانات الدخول غير صحيحة</p>
+        </div>
+    </div>
+
+    <div id="appInterface" class="flex h-screen hidden">
+        
+        <aside class="w-64 bg-slate-800 text-white flex flex-col hidden md:flex">
+            <div class="p-6 text-center border-b border-slate-700">
+                <h2 class="text-xl font-bold">لوحة التحكم</h2>
+                <p class="text-slate-400 text-sm mt-1">أهلاً، المدير العام</p>
+            </div>
+            <nav class="flex-1 overflow-y-auto py-4">
+                <a onclick="showTab('dashboard')" class="flex items-center px-6 py-3 hover:bg-slate-700 cursor-pointer text-blue-100 transition"><i class="fa-solid fa-home ml-3 w-6"></i> الرئيسة</a>
+                <a onclick="showTab('users')" class="flex items-center px-6 py-3 hover:bg-slate-700 cursor-pointer text-gray-300 transition"><i class="fa-solid fa-users ml-3 w-6"></i> إدارة المستخدمين</a>
+                <a onclick="showTab('accounts')" class="flex items-center px-6 py-3 hover:bg-slate-700 cursor-pointer text-gray-300 transition"><i class="fa-solid fa-sitemap ml-3 w-6"></i> شجرة الحسابات</a>
+                <a onclick="showTab('invoices')" class="flex items-center px-6 py-3 hover:bg-slate-700 cursor-pointer text-gray-300 transition"><i class="fa-solid fa-file-invoice-dollar ml-3 w-6"></i> الفواتير</a>
+                <a onclick="showTab('reports')" class="flex items-center px-6 py-3 hover:bg-slate-700 cursor-pointer text-gray-300 transition"><i class="fa-solid fa-chart-line ml-3 w-6"></i> التقارير</a>
+                <a onclick="showTab('settings')" class="flex items-center px-6 py-3 hover:bg-slate-700 cursor-pointer text-gray-300 transition"><i class="fa-solid fa-cog ml-3 w-6"></i> الإعدادات</a>
+            </nav>
+            <div class="p-4 border-t border-slate-700">
+                <button onclick="logout()" class="flex items-center text-red-400 hover:text-red-300"><i class="fa-solid fa-sign-out-alt ml-2"></i> تسجيل الخروج</button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+                <button class="md:hidden text-slate-600"><i class="fa-solid fa-bars text-xl"></i></button>
+                <h2 id="pageTitle" class="text-xl font-bold text-slate-700">الرئيسة (Dashboard)</h2>
+                <div class="flex items-center gap-4">
+                    <button class="bg-blue-100 text-blue-600 p-2 rounded-full"><i class="fa-solid fa-bell"></i></button>
+                    <div class="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-bold">A</div>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-auto p-6 bg-slate-50 relative">
+                
+                <div id="dashboard" class="tab-content block">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-lg shadow-sm border-r-4 border-blue-500">
+                            <p class="text-gray-500 text-sm">إجمالي الإيرادات</p>
+                            <h3 class="text-2xl font-bold text-slate-800 mt-2">$120,500</h3>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-sm border-r-4 border-red-500">
+                            <p class="text-gray-500 text-sm">إجمالي المصروفات</p>
+                            <h3 class="text-2xl font-bold text-slate-800 mt-2">$45,200</h3>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-sm border-r-4 border-green-500">
+                            <p class="text-gray-500 text-sm">الرصيد الحالي</p>
+                            <h3 class="text-2xl font-bold text-slate-800 mt-2">$75,300</h3>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-sm border-r-4 border-yellow-500">
+                            <p class="text-gray-500 text-sm">عدد المستخدمين</p>
+                            <h3 class="text-2xl font-bold text-slate-800 mt-2">12</h3>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="font-bold text-lg mb-4 text-slate-700">آخر العمليات المحاسبية</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-right text-sm text-gray-600">
+                                <thead class="bg-slate-100 text-slate-700">
+                                    <tr>
+                                        <th class="p-3">رقم القيد</th>
+                                        <th class="p-3">البيان</th>
+                                        <th class="p-3">المبلغ</th>
+                                        <th class="p-3">التاريخ</th>
+                                        <th class="p-3">الحالة</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b hover:bg-slate-50">
+                                        <td class="p-3">#1023</td>
+                                        <td class="p-3">فاتورة مبيعات - شركة النور</td>
+                                        <td class="p-3 text-green-600 font-bold">+ $5,000</td>
+                                        <td class="p-3">2023-10-25</td>
+                                        <td class="p-3"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">مكتمل</span></td>
+                                    </tr>
+                                    <tr class="border-b hover:bg-slate-50">
+                                        <td class="p-3">#1024</td>
+                                        <td class="p-3">شراء أثاث مكتبي</td>
+                                        <td class="p-3 text-red-600 font-bold">- $1,200</td>
+                                        <td class="p-3">2023-10-26</td>
+                                        <td class="p-3"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">مكتمل</span></td>
+                                    </tr>
+                                    <tr class="border-b hover:bg-slate-50">
+                                        <td class="p-3">#1025</td>
+                                        <td class="p-3">فاتورة كهرباء</td>
+                                        <td class="p-3 text-red-600 font-bold">- $300</td>
+                                        <td class="p-3">2023-10-27</td>
+                                        <td class="p-3"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">معلق</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="users" class="tab-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-bold">إدارة المستخدمين</h3>
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><i class="fa-solid fa-plus ml-2"></i> إضافة مستخدم</button>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <table class="w-full text-right">
+                            <thead class="bg-slate-100">
+                                <tr>
+                                    <th class="p-4">الاسم</th>
+                                    <th class="p-4">البريد الإلكتروني</th>
+                                    <th class="p-4">الصلاحية</th>
+                                    <th class="p-4">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b">
+                                    <td class="p-4">أحمد محمد</td>
+                                    <td class="p-4">admin@company.com</td>
+                                    <td class="p-4"><span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs">أدمن</span></td>
+                                    <td class="p-4 text-gray-500">
+                                        <button class="hover:text-blue-600"><i class="fa-solid fa-edit"></i></button>
+                                        <button class="hover:text-red-600 mr-2"><i class="fa-solid fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="p-4">سارة علي</td>
+                                    <td class="p-4">sara@company.com</td>
+                                    <td class="p-4"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">محاسب</span></td>
+                                    <td class="p-4 text-gray-500">
+                                        <button class="hover:text-blue-600"><i class="fa-solid fa-edit"></i></button>
+                                        <button class="hover:text-red-600 mr-2"><i class="fa-solid fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="accounts" class="tab-content hidden text-center pt-20 text-gray-400">
+                    <i class="fa-solid fa-sitemap text-6xl mb-4"></i>
+                    <p>واجهة شجرة الحسابات ستكون هنا</p>
+                </div>
+                <div id="invoices" class="tab-content hidden text-center pt-20 text-gray-400">
+                    <i class="fa-solid fa-file-invoice text-6xl mb-4"></i>
+                    <p>واجهة إدارة الفواتير ستكون هنا</p>
+                </div>
+                <div id="reports" class="tab-content hidden text-center pt-20 text-gray-400">
+                    <i class="fa-solid fa-chart-bar text-6xl mb-4"></i>
+                    <p>واجهة التقارير ستكون هنا</p>
+                </div>
+                <div id="settings" class="tab-content hidden text-center pt-20 text-gray-400">
+                    <i class="fa-solid fa-tools text-6xl mb-4"></i>
+                    <p>واجهة الإعدادات ستكون هنا</p>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // وظيفة تسجيل الدخول الوهمية
+        function login() {
+            // هنا يمكن إضافة التحقق الحقيقي لاحقاً
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('appInterface').classList.remove('hidden');
+        }
+
+        // وظيفة تسجيل الخروج
+        function logout() {
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('appInterface').classList.add('hidden');
+        }
+
+        // وظيفة التنقل بين التبويبات
+        function showTab(tabId) {
+            // إخفاء كل التبويبات
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.add('hidden'));
+
+            // إظهار التبويب المختار
+            document.getElementById(tabId).classList.remove('hidden');
+
+            // تحديث العنوان
+            const titles = {
+                'dashboard': 'الرئيسة (Dashboard)',
+                'users': 'إدارة المستخدمين',
+                'accounts': 'شجرة الحسابات',
+                'invoices': 'الفواتير',
+                'reports': 'التقارير المالية',
+                'settings': 'الإعدادات العامة'
+            };
+            document.getElementById('pageTitle').innerText = titles[tabId];
+        }
+    </script>
+</body>
+</html>
