@@ -3,220 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>النظام المحاسبي الذكي</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <title>نظام المحاسبة - نسخة المتصفح</title>
     <style>
-        body { font-family: 'Tajawal', sans-serif; }
-        /* تخصيص ألوان إضافية حسب الطلب (أزرق - رمادي) */
-        .bg-custom-dark { background-color: #1e293b; } /* Slate 800 */
-        .bg-custom-blue { background-color: #3b82f6; } /* Blue 500 */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; text-align: center; padding: 20px; }
+        .container { max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input, select, button { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { background-color: #28a745; color: white; border: none; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #218838; }
+        .error { color: red; font-size: 14px; }
+        .hidden { display: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f2f2f2; }
+        .logout-btn { background-color: #dc3545; margin-top: 20px; }
+        .nav-link { display: block; margin-top: 15px; color: #007bff; text-decoration: none; cursor: pointer; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body>
 
-    <div id="loginScreen" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50">
-        <div class="bg-white p-8 rounded-lg shadow-2xl w-96 text-center">
-            <div class="mb-6">
-                <i class="fa-solid fa-chart-pie text-5xl text-blue-600"></i>
-                <h1 class="text-2xl font-bold mt-2 text-slate-700">النظام المحاسبي</h1>
-            </div>
-            <input type="text" placeholder="اسم المستخدم" class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:border-blue-500">
-            <input type="password" placeholder="كلمة المرور" class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:border-blue-500">
-            <button onclick="login()" class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 transition">تسجيل الدخول</button>
-            <p class="text-red-500 text-sm mt-3 hidden" id="loginError">بيانات الدخول غير صحيحة</p>
+    <div class="container" id="app">
         </div>
-    </div>
-
-    <div id="appInterface" class="flex h-screen hidden">
-        
-        <aside class="w-64 bg-slate-800 text-white flex flex-col hidden md:flex">
-            <div class="p-6 text-center border-b border-slate-700">
-                <h2 class="text-xl font-bold">لوحة التحكم</h2>
-                <p class="text-slate-400 text-sm mt-1">أهلاً، المدير العام</p>
-            </div>
-            <nav class="flex-1 overflow-y-auto py-4">
-                <a onclick="showTab('dashboard')" class="flex items-center px-6 py-3 hover:bg-slate-700 cursor-pointer text-blue-100 transition"><i class="fa-solid fa-home ml-3 w-6"></i> الرئيسة</a>
-                <a onclick="showTab('users')" class="flex items-center px-6 py-3 hover:bg-slate-700 cursor-pointer text-gray-300 transition"><i class="fa-solid fa-users ml-3 w-6"></i> إدارة المستخدمين</a>
-                <a onclick="showTab('accounts')" class="flex items-center px-6 py-3 hover:bg-slate-700 cursor-pointer text-gray-300 transition"><i class="fa-solid fa-sitemap ml-3 w-6"></i> شجرة الحسابات</a>
-                <a onclick="showTab('invoices')" class="flex items-center px-6 py-3 hover:bg-slate-700 cursor-pointer text-gray-300 transition"><i class="fa-solid fa-file-invoice-dollar ml-3 w-6"></i> الفواتير</a>
-                <a onclick="showTab('reports')" class="flex items-center px-6 py-3 hover:bg-slate-700 cursor-pointer text-gray-300 transition"><i class="fa-solid fa-chart-line ml-3 w-6"></i> التقارير</a>
-                <a onclick="showTab('settings')" class="flex items-center px-6 py-3 hover:bg-slate-700 cursor-pointer text-gray-300 transition"><i class="fa-solid fa-cog ml-3 w-6"></i> الإعدادات</a>
-            </nav>
-            <div class="p-4 border-t border-slate-700">
-                <button onclick="logout()" class="flex items-center text-red-400 hover:text-red-300"><i class="fa-solid fa-sign-out-alt ml-2"></i> تسجيل الخروج</button>
-            </div>
-        </aside>
-
-        <main class="flex-1 flex flex-col overflow-hidden">
-            <header class="bg-white shadow-sm p-4 flex justify-between items-center">
-                <button class="md:hidden text-slate-600"><i class="fa-solid fa-bars text-xl"></i></button>
-                <h2 id="pageTitle" class="text-xl font-bold text-slate-700">الرئيسة (Dashboard)</h2>
-                <div class="flex items-center gap-4">
-                    <button class="bg-blue-100 text-blue-600 p-2 rounded-full"><i class="fa-solid fa-bell"></i></button>
-                    <div class="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-bold">A</div>
-                </div>
-            </header>
-
-            <div class="flex-1 overflow-auto p-6 bg-slate-50 relative">
-                
-                <div id="dashboard" class="tab-content block">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="bg-white p-6 rounded-lg shadow-sm border-r-4 border-blue-500">
-                            <p class="text-gray-500 text-sm">إجمالي الإيرادات</p>
-                            <h3 class="text-2xl font-bold text-slate-800 mt-2">$120,500</h3>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-sm border-r-4 border-red-500">
-                            <p class="text-gray-500 text-sm">إجمالي المصروفات</p>
-                            <h3 class="text-2xl font-bold text-slate-800 mt-2">$45,200</h3>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-sm border-r-4 border-green-500">
-                            <p class="text-gray-500 text-sm">الرصيد الحالي</p>
-                            <h3 class="text-2xl font-bold text-slate-800 mt-2">$75,300</h3>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-sm border-r-4 border-yellow-500">
-                            <p class="text-gray-500 text-sm">عدد المستخدمين</p>
-                            <h3 class="text-2xl font-bold text-slate-800 mt-2">12</h3>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-lg shadow-sm p-6">
-                        <h3 class="font-bold text-lg mb-4 text-slate-700">آخر العمليات المحاسبية</h3>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-right text-sm text-gray-600">
-                                <thead class="bg-slate-100 text-slate-700">
-                                    <tr>
-                                        <th class="p-3">رقم القيد</th>
-                                        <th class="p-3">البيان</th>
-                                        <th class="p-3">المبلغ</th>
-                                        <th class="p-3">التاريخ</th>
-                                        <th class="p-3">الحالة</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="border-b hover:bg-slate-50">
-                                        <td class="p-3">#1023</td>
-                                        <td class="p-3">فاتورة مبيعات - شركة النور</td>
-                                        <td class="p-3 text-green-600 font-bold">+ $5,000</td>
-                                        <td class="p-3">2023-10-25</td>
-                                        <td class="p-3"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">مكتمل</span></td>
-                                    </tr>
-                                    <tr class="border-b hover:bg-slate-50">
-                                        <td class="p-3">#1024</td>
-                                        <td class="p-3">شراء أثاث مكتبي</td>
-                                        <td class="p-3 text-red-600 font-bold">- $1,200</td>
-                                        <td class="p-3">2023-10-26</td>
-                                        <td class="p-3"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">مكتمل</span></td>
-                                    </tr>
-                                    <tr class="border-b hover:bg-slate-50">
-                                        <td class="p-3">#1025</td>
-                                        <td class="p-3">فاتورة كهرباء</td>
-                                        <td class="p-3 text-red-600 font-bold">- $300</td>
-                                        <td class="p-3">2023-10-27</td>
-                                        <td class="p-3"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">معلق</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="users" class="tab-content hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-bold">إدارة المستخدمين</h3>
-                        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><i class="fa-solid fa-plus ml-2"></i> إضافة مستخدم</button>
-                    </div>
-                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-                        <table class="w-full text-right">
-                            <thead class="bg-slate-100">
-                                <tr>
-                                    <th class="p-4">الاسم</th>
-                                    <th class="p-4">البريد الإلكتروني</th>
-                                    <th class="p-4">الصلاحية</th>
-                                    <th class="p-4">الإجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="border-b">
-                                    <td class="p-4">أحمد محمد</td>
-                                    <td class="p-4">admin@company.com</td>
-                                    <td class="p-4"><span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs">أدمن</span></td>
-                                    <td class="p-4 text-gray-500">
-                                        <button class="hover:text-blue-600"><i class="fa-solid fa-edit"></i></button>
-                                        <button class="hover:text-red-600 mr-2"><i class="fa-solid fa-trash"></i></button>
-                                    </td>
-                                </tr>
-                                <tr class="border-b">
-                                    <td class="p-4">سارة علي</td>
-                                    <td class="p-4">sara@company.com</td>
-                                    <td class="p-4"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">محاسب</span></td>
-                                    <td class="p-4 text-gray-500">
-                                        <button class="hover:text-blue-600"><i class="fa-solid fa-edit"></i></button>
-                                        <button class="hover:text-red-600 mr-2"><i class="fa-solid fa-trash"></i></button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div id="accounts" class="tab-content hidden text-center pt-20 text-gray-400">
-                    <i class="fa-solid fa-sitemap text-6xl mb-4"></i>
-                    <p>واجهة شجرة الحسابات ستكون هنا</p>
-                </div>
-                <div id="invoices" class="tab-content hidden text-center pt-20 text-gray-400">
-                    <i class="fa-solid fa-file-invoice text-6xl mb-4"></i>
-                    <p>واجهة إدارة الفواتير ستكون هنا</p>
-                </div>
-                <div id="reports" class="tab-content hidden text-center pt-20 text-gray-400">
-                    <i class="fa-solid fa-chart-bar text-6xl mb-4"></i>
-                    <p>واجهة التقارير ستكون هنا</p>
-                </div>
-                <div id="settings" class="tab-content hidden text-center pt-20 text-gray-400">
-                    <i class="fa-solid fa-tools text-6xl mb-4"></i>
-                    <p>واجهة الإعدادات ستكون هنا</p>
-                </div>
-
-            </div>
-        </main>
-    </div>
 
     <script>
-        // وظيفة تسجيل الدخول الوهمية
-        function login() {
-            // هنا يمكن إضافة التحقق الحقيقي لاحقاً
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('appInterface').classList.remove('hidden');
+        // --- 1. إعداد قاعدة البيانات الوهمية (LocalStorage) ---
+        const DB_KEY = 'accounting_system_users';
+        const SESSION_KEY = 'accounting_system_session';
+
+        // إنشاء مستخدم أدمن افتراضي إذا لم يكن موجوداً
+        function initDB() {
+            let users = JSON.parse(localStorage.getItem(DB_KEY));
+            if (!users) {
+                users = [
+                    { id: 1, username: 'admin', password: '123', role: 'admin' },
+                    { id: 2, username: 'user', password: '123', role: 'user' }
+                ];
+                localStorage.setItem(DB_KEY, JSON.stringify(users));
+            }
         }
 
-        // وظيفة تسجيل الخروج
+        // --- 2. دوال التعامل مع البيانات ---
+        function getUsers() {
+            return JSON.parse(localStorage.getItem(DB_KEY));
+        }
+
+        function addUser(username, password, role) {
+            let users = getUsers();
+            // التحقق من تكرار الاسم
+            if(users.find(u => u.username === username)) return false; 
+            
+            let newId = users.length > 0 ? users[users.length - 1].id + 1 : 1;
+            users.push({ id: newId, username, password, role });
+            localStorage.setItem(DB_KEY, JSON.stringify(users));
+            return true;
+        }
+
+        function loginUser(username, password) {
+            let users = getUsers();
+            let user = users.find(u => u.username === username && u.password === password);
+            if (user) {
+                localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+                return user;
+            }
+            return null;
+        }
+
+        function getCurrentUser() {
+            return JSON.parse(localStorage.getItem(SESSION_KEY));
+        }
+
         function logout() {
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('appInterface').classList.add('hidden');
+            localStorage.removeItem(SESSION_KEY);
+            renderLogin();
         }
 
-        // وظيفة التنقل بين التبويبات
-        function showTab(tabId) {
-            // إخفاء كل التبويبات
-            const contents = document.querySelectorAll('.tab-content');
-            contents.forEach(content => content.classList.add('hidden'));
+        // --- 3. دوال العرض (الشاشات) ---
 
-            // إظهار التبويب المختار
-            document.getElementById(tabId).classList.remove('hidden');
-
-            // تحديث العنوان
-            const titles = {
-                'dashboard': 'الرئيسة (Dashboard)',
-                'users': 'إدارة المستخدمين',
-                'accounts': 'شجرة الحسابات',
-                'invoices': 'الفواتير',
-                'reports': 'التقارير المالية',
-                'settings': 'الإعدادات العامة'
-            };
-            document.getElementById('pageTitle').innerText = titles[tabId];
+        // شاشة تسجيل الدخول
+        function renderLogin() {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <h2>تسجيل الدخول</h2>
+                <div id="loginError" class="error"></div>
+                <input type="text" id="loginUser" placeholder="اسم المستخدم (جرب: admin)">
+                <input type="password" id="loginPass" placeholder="كلمة المرور (جرب: 123)">
+                <button onclick="handleLogin()">دخول</button>
+            `;
         }
+
+        // شاشة لوحة التحكم
+        function renderDashboard() {
+            const user = getCurrentUser();
+            if (!user) { renderLogin(); return; }
+
+            const app = document.getElementById('app');
+            let adminControls = '';
+            
+            if (user.role === 'admin') {
+                adminControls = `<a class="nav-link" onclick="renderUserManagement()">⚙️ إدارة المستخدمين (إضافة جديد)</a>`;
+            }
+
+            app.innerHTML = `
+                <h2>مرحبا ${user.username}</h2>
+                <p>الصلاحية الحالية: <strong>${user.role === 'admin' ? 'مدير النظام' : 'مستخدم عادي'}</strong></p>
+                <hr>
+                <p>محتوى ملف الإكسل يمكن عرضه هنا</p>
+                ${adminControls}
+                <button class="logout-btn" onclick="logout()">تسجيل خروج</button>
+            `;
+        }
+
+        // شاشة إدارة المستخدمين (للأدمن فقط)
+        function renderUserManagement() {
+            const user = getCurrentUser();
+            if (!user || user.role !== 'admin') { renderDashboard(); return; }
+
+            const users = getUsers();
+            let userRows = users.map(u => `<tr><td>${u.username}</td><td>${u.role}</td></tr>`).join('');
+
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <h3>إضافة مستخدم جديد</h3>
+                <div id="addError" class="error"></div>
+                <input type="text" id="newUser" placeholder="اسم المستخدم">
+                <input type="password" id="newPass" placeholder="كلمة المرور">
+                <select id="newRole">
+                    <option value="user">عضو</option>
+                    <option value="admin">أدمن</option>
+                </select>
+                <button onclick="handleAddUser()">إضافة</button>
+                <hr>
+                <h3>قائمة المستخدمين</h3>
+                <table>
+                    <tr><th>الاسم</th><th>الصلاحية</th></tr>
+                    ${userRows}
+                </table>
+                <a class="nav-link" onclick="renderDashboard()">🔙 العودة للرئيسية</a>
+            `;
+        }
+
+        // --- 4. المنطق التشغيلي (Handlers) ---
+
+        function handleLogin() {
+            const u = document.getElementById('loginUser').value;
+            const p = document.getElementById('loginPass').value;
+            
+            if (loginUser(u, p)) {
+                renderDashboard();
+            } else {
+                document.getElementById('loginError').innerText = "بيانات الدخول غير صحيحة";
+            }
+        }
+
+        function handleAddUser() {
+            const u = document.getElementById('newUser').value;
+            const p = document.getElementById('newPass').value;
+            const r = document.getElementById('newRole').value;
+
+            if (u && p) {
+                if(addUser(u, p, r)) {
+                    alert('تمت الإضافة بنجاح');
+                    renderUserManagement(); // تحديث الجدول
+                } else {
+                    document.getElementById('addError').innerText = "اسم المستخدم موجود مسبقاً";
+                }
+            } else {
+                document.getElementById('addError').innerText = "يرجى ملء جميع الحقول";
+            }
+        }
+
+        // --- 5. التشغيل الأولي ---
+        initDB(); // تهيئة البيانات
+        if (getCurrentUser()) {
+            renderDashboard();
+        } else {
+            renderLogin();
+        }
+
     </script>
 </body>
 </html>
